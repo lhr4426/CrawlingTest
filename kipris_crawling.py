@@ -48,6 +48,7 @@ print('total page :', total_page)
 # 태그가 div인 모든 요소
 
 is_accepted_flag = False # 해당 특허가 공개거나 등록인지 아닌지를 판별하기 위한 플래그
+patent_name = ''
 
 for page in range(1, total_page) :
     time.sleep(2)
@@ -59,7 +60,7 @@ for page in range(1, total_page) :
         # div인 요소의 id가 resultV로 시작하지 않으면 무시
         if not ipc_id.startswith('resultV') :
             continue
-
+        
         driver.find_element(By.CSS_SELECTOR, f'#{ipc_id} > div.search_section_title > h1 > a').click()
         driver.implicitly_wait(2)
         driver.switch_to.window(driver.window_handles[1])
@@ -69,6 +70,10 @@ for page in range(1, total_page) :
 
         # test 2. iframe의 존재 여부로 확인하기 (이 방법이 더 빠른듯)
         iframe = main_waiter.until(EC.presence_of_element_located((By.CSS_SELECTOR, "#ifrmDetailArea")))
+
+        # iframe으로 포커스 넘어가기 전에 특허 제목 뽑기
+        patent_name = main_waiter.until(EC.visibility_of_element_located((By.XPATH, '//*[@id="apttl"]')))
+        patent_name = patent_name.text
         # iframe = driver.find_element(By.CSS_SELECTOR, '#ifrmDetailArea')
         driver.switch_to.frame(iframe)
         
@@ -85,9 +90,11 @@ for page in range(1, total_page) :
         if not is_accepted_flag :
             continue
     
-        print(ipc_id, end=' | ')
+        # CSV로 저장할 수 있도록
+        print(ipc_id, end=',')
+        print(patent_name, end=',')
         first_ipc = driver.find_element(By.CSS_SELECTOR, f'#{ipc_id} > div.search_basic_info > ul > li:nth-child(1) > span.point01 > a:nth-child(1)')
-        print(first_ipc.text, end=' | ')
+        print(first_ipc.text, end=',')
         print(license_state)
         is_accepted_flag = False
 
