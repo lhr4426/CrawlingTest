@@ -11,7 +11,7 @@ ncsLclasCd_list = ['01','02','03','04','05','06','07','08','09','10','11','12','
 # 내 api key 가져오기
 with open(file_path, "r") as json_file :
     json_data = json.load(json_file)
-    my_key = json_data["ncs"]
+    my_key = json_data["encode"]
 
 # 요청주소
 url = 'http://apis.data.go.kr/B490007/ncsEduCource/openapi20'
